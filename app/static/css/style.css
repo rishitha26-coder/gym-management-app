@@ -263,6 +263,31 @@ tr:hover td { background: var(--surface-2); }
   color: var(--danger);
 }
 
+.alert-info {
+  background: rgba(116, 185, 255, 0.12);
+  border: 1px solid var(--info);
+  color: var(--text);
+}
+
+.welcome-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  border-radius: var(--radius);
+  background: rgba(108, 92, 231, 0.12);
+  border: 1px solid var(--accent);
+  font-size: 0.95rem;
+}
+
+.btn-sm {
+  padding: 0.4rem 0.85rem;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
 .login-page {
   min-height: 100vh;
   display: flex;

@@ -7,10 +7,12 @@ import threading
 import time
 import webbrowser
 
+START_URL = "http://127.0.0.1:8000/starting"
+
 
 def _open_browser() -> None:
-    time.sleep(1.5)
-    webbrowser.open("http://127.0.0.1:8000")
+    time.sleep(1.0)
+    webbrowser.open(START_URL)
 
 
 def main() -> None:

@@ -16,10 +16,10 @@ A **local-only**, zero-cost gym management web application. Runs entirely on you
 
 ## Windows — Install and Run (No Python Required)
 
-1. **Download** `GymManagerSetup.exe` from the [GitHub Actions](../../actions) build (artifact: `GymManager-Windows-zip`) or from a release tag.
+1. **Download** `GymManagerSetup.exe` from the [GitHub Actions](../../actions) build (artifact: **GymManagerSetup**) or from a release tag.
 2. **Install** by double-clicking `GymManagerSetup.exe`.
-3. **Launch** **Gym Manager** from the Start Menu or desktop shortcut.
-4. Your **browser opens automatically** to http://127.0.0.1:8000 — log in and start managing members.
+3. **Launch** **Gym Manager** from the desktop shortcut (created automatically during install).
+4. Your **browser opens automatically** — log in and start managing members.
 
 Your data is stored locally and survives app updates:
 
@@ -27,6 +27,31 @@ Your data is stored locally and survives app updates:
 |------|----------|
 | Database | `%APPDATA%\GymManager\data\gym.db` |
 | Member photos | `%APPDATA%\GymManager\uploads\members\` |
+
+The app works fully offline. No internet connection is required after install.
+
+### How to get GymManagerSetup.exe for your customer
+
+**Option A — GitHub Actions (from macOS/Linux or any machine):**
+
+1. Push this repo to GitHub.
+2. Open **Actions** → **Build Windows EXE** → **Run workflow**.
+3. When the run finishes, open the run → **Artifacts** → download **GymManagerSetup**.
+4. Unzip if your browser wraps the download; the file inside is `GymManagerSetup.exe`.
+
+**Option B — Build on a Windows PC (two commands):**
+
+```bat
+pip install -r requirements.txt -r requirements-build.txt
+pyinstaller build.spec
+cd installer && build-installer.bat
+```
+
+Output: `installer\Output\GymManagerSetup.exe`
+
+**Handover to customer:** give them **only** `GymManagerSetup.exe` (and optionally `CUSTOMER_GUIDE.txt`). They do not need Python, Git, or any other files.
+
+See [CUSTOMER_GUIDE.txt](CUSTOMER_GUIDE.txt) for the plain-text instructions to print or email alongside the installer.
 
 ### Building the Windows `.exe` yourself
 
@@ -37,9 +62,9 @@ pip install -r requirements.txt -r requirements-build.txt
 pyinstaller build.spec
 ```
 
-The app folder is created at `dist\GymManager\`. Double-click `GymManager.exe` to run.
+The app folder is created at `dist\GymManager\`. Double-click `GymManager.exe` to run (dev/testing only — use the installer for customers).
 
-**Optional installer** (requires [Inno Setup 6+](https://jrsoftware.org/isinfo.php)):
+**Installer** (requires [Inno Setup 6+](https://jrsoftware.org/isinfo.php)):
 
 ```bat
 cd installer
@@ -48,7 +73,7 @@ build-installer.bat
 
 Output: `installer\Output\GymManagerSetup.exe`
 
-**From macOS/Linux:** You cannot build a Windows `.exe` locally. Push a version tag (e.g. `v1.0.0`) or run the **Build Windows EXE** workflow manually on GitHub Actions, then download the artifact.
+**From macOS/Linux:** You cannot build a Windows `.exe` locally. Push a version tag (e.g. `v1.0.0`) or run the **Build Windows EXE** workflow manually on GitHub Actions, then download the **GymManagerSetup** artifact.
 
 ## Developer Quick Start (macOS / Linux / Windows)
 
@@ -110,6 +135,7 @@ Excel is recommended for gym owners on Windows; CSV remains available for import
 gym-management-app/
 ├── launcher.py              # Starts server + opens browser
 ├── build.spec               # PyInstaller packaging config
+├── CUSTOMER_GUIDE.txt       # Plain-text handout for gym owner (5 steps)
 ├── requirements-build.txt   # PyInstaller (build only)
 ├── .github/workflows/
 │   └── build-windows.yml    # CI build for Windows exe

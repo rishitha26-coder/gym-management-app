@@ -1,0 +1,9 @@
+Gym Manager — Quick Start
+
+1. Double-click GymManagerSetup.exe
+2. Click Install
+3. Double-click "Gym Manager" on your desktop
+4. Login: admin / admin123
+5. Start adding members!
+
+Your member data is saved automatically on this computer.

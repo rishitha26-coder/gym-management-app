@@ -5,12 +5,15 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, status
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.database import Base, SessionLocal, engine, run_migrations
-from app.paths import get_static_dir, get_uploads_dir, is_frozen
+from app.paths import get_static_dir, get_templates_dir, get_uploads_dir, is_frozen
 from app.routers import auth, dashboard, members, reports
 from app.seed import init_db
+
+templates = Jinja2Templates(directory=str(get_templates_dir()))
 
 
 @asynccontextmanager
@@ -50,3 +53,9 @@ async def unauthorized_handler(request: Request, exc):
 @app.get("/health")
 async def health():
     return {"status": "ok", "frozen": is_frozen()}
+
+
+@app.get("/starting")
+async def starting_page(request: Request):
+    """Friendly loading page while the local server finishes starting."""
+    return templates.TemplateResponse(request, "starting.html", {})

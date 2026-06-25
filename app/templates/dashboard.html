@@ -2,6 +2,18 @@
 {% block title %}Dashboard - Gym Management{% endblock %}
 {% block page_title %}Dashboard{% endblock %}
 {% block content %}
+{% if show_welcome %}
+<div class="welcome-banner">
+  <div>
+    <strong>Welcome to Gym Manager!</strong>
+    You are signed in as <strong>{{ user.username }}</strong>.
+    Default admin login is <strong>admin</strong> / <strong>admin123</strong> — share staff login <strong>staff</strong> / <strong>staff123</strong> with your team if needed.
+  </div>
+  <form method="post" action="/welcome/dismiss">
+    <button type="submit" class="btn btn-secondary btn-sm">Got it</button>
+  </form>
+</div>
+{% endif %}
 <div class="stats-grid">
   <div class="stat-card">
     <div class="label">Total Members</div>

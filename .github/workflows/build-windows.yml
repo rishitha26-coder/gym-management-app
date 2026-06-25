@@ -28,20 +28,20 @@ jobs:
       - name: Build executable
         run: pyinstaller build.spec
 
-      - name: Upload GymManager folder
-        uses: actions/upload-artifact@v4
-        with:
-          name: GymManager-Windows
-          path: dist/GymManager/
-          retention-days: 30
+      - name: Install Inno Setup
+        run: choco install innosetup -y --no-progress
 
-      - name: Upload GymManager zip
+      - name: Build installer
         shell: pwsh
-        run: Compress-Archive -Path dist/GymManager -DestinationPath dist/GymManager-Windows.zip
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { $iscc = "$env:ProgramFiles\Inno Setup 6\ISCC.exe" }
+          if (-not (Test-Path $iscc)) { throw "Inno Setup ISCC.exe not found after install" }
+          & $iscc "installer\GymManager.iss"
 
-      - name: Upload zip artifact
+      - name: Upload GymManagerSetup.exe
         uses: actions/upload-artifact@v4
         with:
-          name: GymManager-Windows-zip
-          path: dist/GymManager-Windows.zip
-          retention-days: 30
+          name: GymManagerSetup
+          path: installer/Output/GymManagerSetup.exe
+          retention-days: 90

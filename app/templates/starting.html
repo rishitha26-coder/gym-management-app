@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Starting Gym Manager...</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    .starting-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse at top, #1a1a2e 0%, var(--bg) 70%);
+    }
+    .starting-card {
+      text-align: center;
+      padding: 2.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) * 1.5);
+      box-shadow: var(--shadow);
+      max-width: 420px;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      margin: 1.5rem auto 0;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="starting-page">
+    <div class="starting-card">
+      <h1>Gym<span style="color:var(--accent)">Manager</span></h1>
+      <p style="color:var(--muted);margin-top:0.75rem">Starting up — your browser will open the login page in a moment.</p>
+      <div class="spinner" aria-hidden="true"></div>
+    </div>
+  </div>
+  <script>
+    (function poll() {
+      fetch("/health")
+        .then(function (r) { if (r.ok) window.location.href = "/login"; else setTimeout(poll, 400); })
+        .catch(function () { setTimeout(poll, 400); });
+    })();
+  </script>
+</body>
+</html>

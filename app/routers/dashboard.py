@@ -1,12 +1,13 @@
 """Dashboard routes."""
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, status
+from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
 from app.auth import require_login
 from app.database import get_db
-from app.paths import get_templates_dir
+from app.paths import get_templates_dir, get_welcome_dismissed_path, should_show_welcome
 from app.schemas import UserOut
 from app.services.renewal_service import RenewalService
 
@@ -30,5 +31,15 @@ async def dashboard(
             "stats": stats,
             "renewals_today": renewals.due_today[:5],
             "renewals_soon": renewals.next_7_days[:5],
+            "show_welcome": should_show_welcome(),
         },
     )
+
+
+@router.post("/welcome/dismiss")
+async def dismiss_welcome(
+    request: Request,
+    user: UserOut = Depends(require_login),
+):
+    get_welcome_dismissed_path().touch()
+    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)

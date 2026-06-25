@@ -68,3 +68,17 @@ def get_static_dir() -> Path:
 def uploads_url_prefix() -> str:
     """URL path prefix served for uploaded member photos."""
     return "/uploads/members"
+
+
+def get_welcome_dismissed_path() -> Path:
+    """Marker file indicating the first-run welcome banner was dismissed."""
+    if is_frozen():
+        path = _user_data_root() / ".welcome_dismissed"
+    else:
+        path = _bundle_root() / ".welcome_dismissed"
+    return path
+
+
+def should_show_welcome() -> bool:
+    """Return True until the user dismisses the first-run welcome banner."""
+    return not get_welcome_dismissed_path().exists()
