@@ -1,5 +1,5 @@
 ; Inno Setup script for Celebrity Fitness Manager (run on Windows after PyInstaller build)
-; Requires Inno Setup 6+: https://jrsoftware.org/isinfo.php
+; Compatible with Inno Setup 6.0.x (Chocolatey default in CI)
 
 #define MyAppName "Celebrity Fitness Manager"
 #define MyAppVersion "1.0.0"
@@ -25,20 +25,13 @@ UninstallDisplayIcon={app}\{#MyAppExeName}
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
-[Tasks]
-Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Additional icons:"; Flags: checked
-
 [Files]
 Source: "..\dist\GymManager\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\CUSTOMER_GUIDE.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "start_gym.bat"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
-
-[Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "Launch {#MyAppName}"; Flags: nowait postinstall skipifsilent
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 
 [Messages]
 WelcomeLabel2=This will install [name/ver] on your computer.%n%nYour member data is stored in %APPDATA%\GymManager and persists across updates.
