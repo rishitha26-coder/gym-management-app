@@ -11,7 +11,12 @@ from app.auth import require_login
 from app.database import get_db
 from app.models import Member, MemberStatus, UserRole
 from app.services.member_service import MemberService
-from app.network import get_lan_url, get_server_port
+from app.network import (
+    get_friendly_lan_urls,
+    get_lan_ip_url,
+    get_lan_url,
+    get_server_port,
+)
 from app.paths import (
     get_lan_dismissed_path,
     get_templates_dir,
@@ -59,6 +64,8 @@ async def dashboard(
             "show_welcome": should_show_welcome(),
             "show_lan_banner": user.role == UserRole.ADMIN and should_show_lan_banner(),
             "lan_url": get_lan_url(get_server_port(request)),
+            "lan_urls": get_friendly_lan_urls(get_server_port(request)),
+            "lan_ip_url": get_lan_ip_url(get_server_port(request)),
         },
     )
 

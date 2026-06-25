@@ -47,11 +47,18 @@
       <img src="/static/images/logo.png" alt="Celebrity Fitness Studio" class="starting-logo">
       <h1 style="font-size:1.25rem">Celebrity Fitness Studio</h1>
       <p id="status" style="color:var(--muted);margin-top:0.75rem">Starting up — your browser will open the login page in a moment.</p>
-      {% if lan_url %}
+      {% if lan_urls or lan_ip_url %}
       <p class="lan-note" style="margin-top:1rem;font-size:0.9rem;color:var(--accent)">
         Staff on the same WiFi can also open:<br>
-        <strong>{{ lan_url }}</strong>
+        {% if lan_urls %}
+        {% for url in lan_urls %}
+        <strong>{{ url }}</strong>{% if not loop.last %}<br>{% endif %}
+        {% endfor %}
+        {% endif %}
       </p>
+      {% if lan_ip_url %}
+      <p style="color:var(--muted);font-size:0.8rem;margin-top:0.5rem">{% if lan_urls %}If that doesn't work, try: {% endif %}{{ lan_ip_url }}</p>
+      {% endif %}
       <p style="color:var(--muted);font-size:0.8rem;margin-top:0.5rem">Use only on your trusted gym WiFi.</p>
       {% endif %}
       <div class="spinner" aria-hidden="true"></div>

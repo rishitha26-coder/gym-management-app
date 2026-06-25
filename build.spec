@@ -26,6 +26,9 @@ hiddenimports = [
     "openpyxl",
     "reportlab",
     "multipart",
+    "zeroconf",
+    "zeroconf._handlers",
+    "zeroconf._utils.ipaddress",
 ]
 
 a = Analysis(

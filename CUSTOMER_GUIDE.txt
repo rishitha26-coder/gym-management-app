@@ -21,10 +21,15 @@ ONE PC ONLY (owner's computer)
   Address: http://127.0.0.1:8000
 
 STAFF ON SAME WiFi (free local network)
-  After launching on the gym PC, the dashboard shows a link like:
-    http://192.168.x.x:8000
-  Staff on phones/laptops connected to the SAME gym WiFi can open that
-  address in any browser and log in (staff / staff123).
+  All devices must be on the SAME gym WiFi as the owner's PC.
+  After launching, the dashboard shows a staff link like:
+    http://YOUR-PC-NAME:8000
+  (YOUR-PC-NAME is the Windows computer name, e.g. DESKTOP-ABC123)
+  If available, you may also see:
+    http://celebrity-fitness.local:8000
+  Share that link with staff — not the IP address. Staff open it in any
+  browser and log in (staff / staff123).
+  If the name link does not work, the dashboard also shows an IP fallback.
   IMPORTANT: Use only on your trusted gym WiFi. Do not expose to the public internet.
 
 TROUBLESHOOTING

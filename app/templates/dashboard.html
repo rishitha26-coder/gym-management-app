@@ -3,11 +3,18 @@
 {% block body_class %}page-dashboard{% endblock %}
 {% block page_header %}{% endblock %}
 {% block content %}
-{% if show_lan_banner and lan_url %}
+{% if show_lan_banner and (lan_urls or lan_ip_url) %}
 <div class="lan-banner">
   <div class="lan-banner-content">
-    <span class="lan-banner-label">WiFi:</span>
-    <a href="{{ lan_url }}" target="_blank" rel="noopener">{{ lan_url }}</a>
+    {% if lan_urls %}
+    <span class="lan-banner-label">Staff link:</span>
+    {% for url in lan_urls %}
+    <a href="{{ url }}" target="_blank" rel="noopener">{{ url }}</a>{% if not loop.last %} · {% endif %}
+    {% endfor %}
+    {% endif %}
+    {% if lan_ip_url %}
+    <span class="lan-banner-hint">{% if lan_urls %}If the link doesn't work, try: {% else %}Staff link: {% endif %}<a href="{{ lan_ip_url }}" target="_blank" rel="noopener">{{ lan_ip_url }}</a></span>
+    {% endif %}
   </div>
   <form method="post" action="/lan/dismiss">
     <button type="submit" class="btn btn-secondary btn-sm">Got it</button>

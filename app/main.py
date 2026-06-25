@@ -9,7 +9,13 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.database import Base, SessionLocal, engine, run_migrations
-from app.network import get_lan_url, get_server_port
+from app.mdns import start_mdns_registration, unregister_mdns_service
+from app.network import (
+    get_friendly_lan_urls,
+    get_lan_ip_url,
+    get_lan_url,
+    get_server_port,
+)
 from app.paths import get_static_dir, get_templates_dir, get_uploads_dir, is_frozen
 from app.routers import auth, dashboard, members, reports
 from app.seed import init_db
@@ -26,7 +32,9 @@ async def lifespan(app: FastAPI):
         init_db(db)
     finally:
         db.close()
+    start_mdns_registration()
     yield
+    unregister_mdns_service()
 
 
 app = FastAPI(title="Celebrity Fitness Studio", lifespan=lifespan)
@@ -59,6 +67,8 @@ async def health(request: Request):
         "frozen": is_frozen(),
         "port": port,
         "lan_url": get_lan_url(port),
+        "lan_urls": get_friendly_lan_urls(port),
+        "lan_ip_url": get_lan_ip_url(port),
     }
 
 
@@ -69,5 +79,9 @@ async def starting_page(request: Request):
     return templates.TemplateResponse(
         request,
         "starting.html",
-        {"lan_url": get_lan_url(port)},
+        {
+            "lan_url": get_lan_url(port),
+            "lan_urls": get_friendly_lan_urls(port),
+            "lan_ip_url": get_lan_ip_url(port),
+        },
     )
