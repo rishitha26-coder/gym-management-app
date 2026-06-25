@@ -22,14 +22,13 @@ ONE PC ONLY (owner's computer)
 
 STAFF ON SAME WiFi (free local network)
   All devices must be on the SAME gym WiFi as the owner's PC.
-  After launching, the dashboard shows a staff link like:
-    http://YOUR-PC-NAME:8000
-  (YOUR-PC-NAME is the Windows computer name, e.g. DESKTOP-ABC123)
-  If available, you may also see:
+  After launching, the dashboard shows a staff link:
     http://celebrity-fitness.local:8000
-  Share that link with staff — not the IP address. Staff open it in any
+  If that does not work, the dashboard also shows a backup using your
+  Windows computer name (e.g. http://DESKTOP-ABC123:8000).
+  Share the staff link with staff — not the IP address. Staff open it in any
   browser and log in (staff / staff123).
-  If the name link does not work, the dashboard also shows an IP fallback.
+  If neither link works, the dashboard also shows an IP fallback.
   IMPORTANT: Use only on your trusted gym WiFi. Do not expose to the public internet.
 
 TROUBLESHOOTING

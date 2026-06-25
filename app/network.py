@@ -85,14 +85,13 @@ def get_friendly_lan_urls(port: int | None = None) -> list[str]:
 
     urls: list[str] = []
 
+    urls.append(f"http://{MDNS_HOSTNAME}.local:{port}")
+
     computer_name = get_computer_name()
     if computer_name:
-        urls.append(f"http://{computer_name}:{port}")
-
-    if _mdns_active:
-        mdns_url = f"http://{MDNS_HOSTNAME}.local:{port}"
-        if mdns_url not in urls:
-            urls.append(mdns_url)
+        computer_url = f"http://{computer_name}:{port}"
+        if computer_url not in urls:
+            urls.append(computer_url)
 
     return urls
 
