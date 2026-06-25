@@ -18,7 +18,6 @@ OutputBaseFilename=GymManagerSetup
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
-ArchitecturesInstallModes=x64compatible
 PrivilegesRequired=lowest
 DisableProgramGroupPage=yes
 UninstallDisplayIcon={app}\{#MyAppExeName}
