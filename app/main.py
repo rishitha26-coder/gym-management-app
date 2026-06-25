@@ -16,7 +16,13 @@ from app.network import (
     get_lan_url,
     get_server_port,
 )
-from app.paths import get_static_dir, get_templates_dir, get_uploads_dir, is_frozen
+from app.paths import (
+    get_startup_log_path,
+    get_static_dir,
+    get_templates_dir,
+    get_uploads_dir,
+    is_frozen,
+)
 from app.routers import auth, dashboard, members, reports
 from app.seed import init_db
 
@@ -33,10 +39,16 @@ async def lifespan(app: FastAPI):
     finally:
         db.close()
     if not is_frozen():
-        start_mdns_registration()
+        try:
+            start_mdns_registration()
+        except Exception:
+            pass
     yield
     if not is_frozen():
-        unregister_mdns_service()
+        try:
+            unregister_mdns_service()
+        except Exception:
+            pass
 
 
 app = FastAPI(title="Celebrity Fitness Studio", lifespan=lifespan)
@@ -85,5 +97,6 @@ async def starting_page(request: Request):
             "lan_url": get_lan_url(port),
             "lan_urls": get_friendly_lan_urls(port),
             "lan_ip_url": get_lan_ip_url(port),
+            "startup_log_path": str(get_startup_log_path()),
         },
     )

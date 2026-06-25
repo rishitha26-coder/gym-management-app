@@ -10,6 +10,17 @@ def is_frozen() -> bool:
     return getattr(sys, "frozen", False)
 
 
+def get_startup_log_path() -> Path:
+    """Diagnostic log written by the Windows launcher on startup."""
+    if sys.platform == "win32":
+        app_data = os.environ.get("APPDATA", os.path.expanduser("~"))
+        log_dir = Path(app_data) / "GymManager"
+    else:
+        log_dir = Path.home() / ".gym-manager"
+    log_dir.mkdir(parents=True, exist_ok=True)
+    return log_dir / "startup.log"
+
+
 def _bundle_root() -> Path:
     """Root directory for bundled read-only assets."""
     if is_frozen():

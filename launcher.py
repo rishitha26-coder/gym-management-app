@@ -17,6 +17,7 @@ from pathlib import Path
 HOST = "0.0.0.0"
 PORT = 8000
 START_URL = f"http://127.0.0.1:{PORT}/starting"
+HEALTH_WAIT_TIMEOUT = 60.0
 
 STARTUP_ERROR = (
     "Could not start Celebrity Fitness Manager.\n\n"
@@ -30,19 +31,25 @@ def is_frozen() -> bool:
     return getattr(sys, "frozen", False)
 
 
-def get_startup_log_path() -> Path:
-    """Persistent log file for frozen-exe startup diagnostics."""
-    if sys.platform == "win32":
-        app_data = os.environ.get("APPDATA", os.path.expanduser("~"))
-        log_dir = Path(app_data) / "GymManager"
-    else:
-        log_dir = Path.home() / ".gym-manager"
-    log_dir.mkdir(parents=True, exist_ok=True)
-    return log_dir / "startup.log"
+def bootstrap_frozen_environment() -> None:
+    """Minimal frozen setup before importing app modules (no logging yet)."""
+    if not is_frozen():
+        return
+
+    bundle_root = getattr(sys, "_MEIPASS", None)
+    if bundle_root:
+        os.chdir(bundle_root)
+
+    exe_dir = Path(sys.executable).resolve().parent
+    for entry in (str(exe_dir), bundle_root):
+        if entry and entry not in sys.path:
+            sys.path.insert(0, entry)
 
 
 def setup_startup_logging() -> Path:
     """Configure file logging before any app imports (frozen builds have no console)."""
+    from app.paths import get_startup_log_path
+
     log_path = get_startup_log_path()
     root = logging.getLogger()
     root.handlers.clear()
@@ -59,20 +66,15 @@ def setup_startup_logging() -> Path:
 
 
 def configure_frozen_environment() -> None:
-    """Set cwd and import paths so bundled assets and the app package resolve."""
+    """Log frozen path setup (bootstrap already applied sys.path and cwd)."""
     if not is_frozen():
         return
 
     bundle_root = getattr(sys, "_MEIPASS", None)
+    logging.info("Working directory: %s", os.getcwd())
     if bundle_root:
-        os.chdir(bundle_root)
-        logging.info("Working directory set to bundle root: %s", bundle_root)
-
-    exe_dir = Path(sys.executable).resolve().parent
-    for entry in (str(exe_dir), bundle_root):
-        if entry and entry not in sys.path:
-            sys.path.insert(0, entry)
-            logging.info("Added to sys.path: %s", entry)
+        logging.info("Bundle root (_MEIPASS): %s", bundle_root)
+    logging.info("Executable: %s", sys.executable)
 
 
 def is_port_in_use(port: int) -> bool:
@@ -120,21 +122,43 @@ def _wait_for_health(timeout: float = 30.0) -> bool:
     """Poll /health until the server responds or timeout expires."""
     health_url = f"http://127.0.0.1:{PORT}/health"
     deadline = time.time() + timeout
+    attempt = 0
     while time.time() < deadline:
+        attempt += 1
         try:
             with urllib.request.urlopen(health_url, timeout=1.5) as response:
                 if response.status == 200:
+                    logging.info("/health OK after %s attempt(s)", attempt)
                     return True
-        except (urllib.error.URLError, TimeoutError, OSError):
-            pass
+        except (urllib.error.URLError, TimeoutError, OSError) as exc:
+            if attempt == 1 or attempt % 10 == 0:
+                logging.debug("/health not ready (attempt %s): %s", attempt, exc)
         time.sleep(0.5)
+    logging.warning("/health did not respond within %ss (%s attempts)", timeout, attempt)
     return False
 
 
-def _open_browser() -> None:
-    # Slow PCs may need several seconds before uvicorn accepts connections.
-    time.sleep(3.0)
-    _wait_for_health(timeout=25.0)
+def _open_browser_when_ready() -> None:
+    """Open the browser only after the server is healthy, or show a timeout hint."""
+    from app.paths import get_startup_log_path
+
+    log_path = get_startup_log_path()
+    logging.info(
+        "Waiting up to %ss for /health before opening browser...",
+        HEALTH_WAIT_TIMEOUT,
+    )
+    if _wait_for_health(timeout=HEALTH_WAIT_TIMEOUT):
+        logging.info("Server ready; opening browser at %s", START_URL)
+        webbrowser.open(START_URL)
+        return
+
+    logging.error("Server not healthy after %ss; opening browser with troubleshooting page", HEALTH_WAIT_TIMEOUT)
+    show_error(
+        "The app is still starting and may take another minute.\n\n"
+        "Your browser will open shortly. If you see a loading screen for more "
+        "than 30 seconds, wait and refresh — or click Open Login.\n\n"
+        f"If the problem continues, check:\n{log_path}"
+    )
     webbrowser.open(START_URL)
 
 
@@ -162,6 +186,7 @@ def _run_server() -> None:
 
 
 def main() -> None:
+    bootstrap_frozen_environment()
     log_path = setup_startup_logging()
     logging.info("Celebrity Fitness Manager launcher starting")
     logging.info("Python %s on %s", sys.version.replace("\n", " "), sys.platform)
@@ -180,8 +205,11 @@ def main() -> None:
         show_error(msg)
         sys.exit(1)
 
+    logging.info("Port %s is available", PORT)
     write_start_bat()
-    threading.Thread(target=_open_browser, daemon=True).start()
+    logging.info("Launching browser thread (opens after /health is ready)")
+    threading.Thread(target=_open_browser_when_ready, daemon=True).start()
+    logging.info("Starting uvicorn server...")
     _run_server()
 
 
@@ -195,14 +223,24 @@ def _format_failure_message(exc: BaseException, log_path: Path) -> str:
 
 
 if __name__ == "__main__":
-    log_path = get_startup_log_path()
+    bootstrap_frozen_environment()
+    try:
+        from app.paths import get_startup_log_path as _get_log_path
+
+        log_path = _get_log_path()
+    except Exception:
+        log_path = Path.home() / ".gym-manager" / "startup.log"
+
     try:
         main()
     except KeyboardInterrupt:
         sys.exit(0)
     except OSError as exc:
         if not logging.getLogger().handlers:
-            setup_startup_logging()
+            try:
+                setup_startup_logging()
+            except Exception:
+                pass
         logging.exception("Launcher failed with OSError")
         if exc.errno in {48, 98, 10048}:  # Address already in use (macOS/Linux/Windows)
             show_error(
