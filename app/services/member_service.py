@@ -184,6 +184,37 @@ class MemberService:
             return None
         return cls.to_schema(member)
 
+    @staticmethod
+    def initials(full_name: str) -> str:
+        parts = full_name.strip().split()
+        if not parts:
+            return "?"
+        if len(parts) == 1:
+            return parts[0][:2].upper()
+        return (parts[0][0] + parts[-1][0]).upper()
+
+    @classmethod
+    def list_all(
+        cls,
+        db: Session,
+        query: str = "",
+        status: Optional[str] = None,
+        plan_months: Optional[int] = None,
+    ) -> list[MemberOut]:
+        q = db.query(Member)
+        term = query.strip()
+        if term:
+            q = q.filter(
+                (Member.phone.contains(term)) | (Member.full_name.ilike(f"%{term}%"))
+            )
+        if plan_months is not None:
+            q = q.filter(Member.plan_months == plan_months)
+        members = q.order_by(Member.full_name).all()
+        results = [cls.to_schema(m) for m in members]
+        if status:
+            results = [m for m in results if m.status.value == status]
+        return results
+
     @classmethod
     def search(cls, db: Session, query: str) -> list[MemberOut]:
         q = query.strip()

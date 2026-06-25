@@ -59,6 +59,18 @@ class RenewalService:
         pt_collected = sum(
             m.personal_training_amount or 0 for m in members
         )
+        fee_this_month = sum(
+            m.fee_paid
+            for m in members
+            if m.payment_date and m.payment_date.year == today.year
+            and m.payment_date.month == today.month
+        )
+        pt_this_month = sum(
+            m.personal_training_amount or 0
+            for m in members
+            if m.payment_date and m.payment_date.year == today.year
+            and m.payment_date.month == today.month
+        )
 
         return DashboardStats(
             total_members=total,
@@ -69,4 +81,6 @@ class RenewalService:
             renewals_next_7_days=week_count,
             total_collected=total_collected,
             personal_training_collected=pt_collected,
+            fee_this_month=fee_this_month,
+            pt_this_month=pt_this_month,
         )

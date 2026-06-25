@@ -16,6 +16,10 @@ class UserOut(BaseModel):
 
     model_config = {"from_attributes": True}
 
+    @property
+    def role_label(self) -> str:
+        return "Admin" if self.role == UserRole.ADMIN else "Staff"
+
 
 class LoginForm(BaseModel):
     username: str
@@ -31,6 +35,8 @@ class DashboardStats(BaseModel):
     renewals_next_7_days: int
     total_collected: float
     personal_training_collected: float
+    fee_this_month: float
+    pt_this_month: float
 
 
 class MemberBase(BaseModel):

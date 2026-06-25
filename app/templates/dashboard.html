@@ -1,111 +1,181 @@
 {% extends "base.html" %}
 {% block title %}Dashboard - Celebrity Fitness Studio{% endblock %}
-{% block page_title %}Dashboard{% endblock %}
+{% block body_class %}page-dashboard{% endblock %}
+{% block page_header %}{% endblock %}
 {% block content %}
-{% if lan_url %}
+{% if show_lan_banner and lan_url %}
 <div class="lan-banner">
-  <div>
-    <strong>Local network access</strong> — Staff on the same WiFi can open
+  <div class="lan-banner-content">
+    <span class="lan-banner-label">WiFi:</span>
     <a href="{{ lan_url }}" target="_blank" rel="noopener">{{ lan_url }}</a>
-    from a phone or laptop.
-    <span class="lan-banner-note">Only use on your trusted gym WiFi; data stays on this PC.</span>
   </div>
+  <form method="post" action="/lan/dismiss">
+    <button type="submit" class="btn btn-secondary btn-sm">Got it</button>
+  </form>
 </div>
 {% endif %}
 {% if show_welcome %}
 <div class="welcome-banner">
   <div>
     <strong>Welcome to Celebrity Fitness Studio!</strong>
-    You are signed in as <strong>{{ user.username }}</strong>.
-    Default admin login is <strong>admin</strong> / <strong>admin123</strong> — share staff login <strong>staff</strong> / <strong>staff123</strong> with your team if needed.
+    You're all set to manage members, renewals, and payments.
   </div>
   <form method="post" action="/welcome/dismiss">
     <button type="submit" class="btn btn-secondary btn-sm">Got it</button>
   </form>
 </div>
 {% endif %}
-<div class="stats-grid">
-  <div class="stat-card">
-    <div class="label">Total Members</div>
-    <div class="value">{{ stats.total_members }}</div>
+
+<section class="dashboard-hero">
+  <div class="dashboard-hero-top">
+    <div>
+      <h1 class="dashboard-title">Dashboard</h1>
+      <p class="dashboard-subtitle">Membership overview for Celebrity Fitness Studio</p>
+    </div>
+    {% if user %}
+    <div class="user-badge user-badge-hero">
+      <span class="role-badge role-badge-{{ user.role.value }}">{{ user.role_label }}</span>
+    </div>
+    {% endif %}
   </div>
-  <div class="stat-card success">
-    <div class="label">Active</div>
-    <div class="value">{{ stats.active_members }}</div>
+
+  <div class="metrics-band">
+    <p class="metrics-band-label">Payments this month</p>
+    <div class="metric-rings">
+      <div class="metric-ring-card metric-ring-green">
+        <div class="metric-ring" style="--ring-pct: 100;">
+          <svg viewBox="0 0 88 88" aria-hidden="true">
+            <circle class="metric-ring-track" cx="44" cy="44" r="38"/>
+            <circle class="metric-ring-fill" cx="44" cy="44" r="38"/>
+          </svg>
+          <div class="metric-ring-inner">
+            <span class="metric-ring-value">₹{{ "{:,.0f}".format(stats.fee_this_month | default(0)) }}</span>
+          </div>
+        </div>
+        <span class="metric-ring-label">Paid This Month</span>
+      </div>
+      <div class="metric-ring-card metric-ring-yellow">
+        <div class="metric-ring" style="--ring-pct: {{ [(stats.renewal_pending | default(0)) * 10, 100] | min }};">
+          <svg viewBox="0 0 88 88" aria-hidden="true">
+            <circle class="metric-ring-track" cx="44" cy="44" r="38"/>
+            <circle class="metric-ring-fill" cx="44" cy="44" r="38"/>
+          </svg>
+          <div class="metric-ring-inner">
+            <span class="metric-ring-value">{{ stats.renewal_pending | default(0) }}</span>
+          </div>
+        </div>
+        <span class="metric-ring-label">Renewal Pending</span>
+      </div>
+      <div class="metric-ring-card metric-ring-red">
+        <div class="metric-ring" style="--ring-pct: {{ [(stats.expired_members | default(0)) * 10, 100] | min }};">
+          <svg viewBox="0 0 88 88" aria-hidden="true">
+            <circle class="metric-ring-track" cx="44" cy="44" r="38"/>
+            <circle class="metric-ring-fill" cx="44" cy="44" r="38"/>
+          </svg>
+          <div class="metric-ring-inner">
+            <span class="metric-ring-value">{{ stats.expired_members | default(0) }}</span>
+          </div>
+        </div>
+        <span class="metric-ring-label">Expired / Overdue</span>
+      </div>
+    </div>
   </div>
-  <div class="stat-card warning">
-    <div class="label">Renewal Pending</div>
-    <div class="value">{{ stats.renewal_pending }}</div>
+</section>
+
+<div class="dashboard-summary-pills">
+  <div class="summary-pill">
+    <span class="summary-pill-label">Total Members</span>
+    <span class="summary-pill-value">{{ stats.total_members | default(0) }}</span>
   </div>
-  <div class="stat-card danger">
-    <div class="label">Expired</div>
-    <div class="value">{{ stats.expired_members }}</div>
+  <div class="summary-pill">
+    <span class="summary-pill-label">Active</span>
+    <span class="summary-pill-value summary-pill-success">{{ stats.active_members | default(0) }}</span>
   </div>
-  <div class="stat-card info">
-    <div class="label">Renewals Today</div>
-    <div class="value">{{ stats.renewals_today }}</div>
+  <div class="summary-pill">
+    <span class="summary-pill-label">Due Today</span>
+    <span class="summary-pill-value">{{ stats.renewals_today | default(0) }}</span>
   </div>
-  <div class="stat-card info">
-    <div class="label">Next 7 Days</div>
-    <div class="value">{{ stats.renewals_next_7_days }}</div>
+  <div class="summary-pill">
+    <span class="summary-pill-label">Next 7 Days</span>
+    <span class="summary-pill-value">{{ stats.renewals_next_7_days | default(0) }}</span>
   </div>
-  <div class="stat-card">
-    <div class="label">Total Collected</div>
-    <div class="value" style="font-size:1.4rem">₹{{ "{:,.0f}".format(stats.total_collected) }}</div>
-  </div>
-  <div class="stat-card">
-    <div class="label">PT Collected</div>
-    <div class="value" style="font-size:1.4rem">₹{{ "{:,.0f}".format(stats.personal_training_collected) }}</div>
+  <div class="summary-pill">
+    <span class="summary-pill-label">PT This Month</span>
+    <span class="summary-pill-value">₹{{ "{:,.0f}".format(stats.pt_this_month | default(0)) }}</span>
   </div>
 </div>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
-  <div class="card">
-    <h2>Renewals Due Today</h2>
-    {% if renewals_today %}
-    <table>
-      <thead><tr><th>Name</th><th>Phone</th><th>Plan</th></tr></thead>
-      <tbody>
-        {% for m in renewals_today %}
-        <tr>
-          <td><a href="/members/{{ m.id }}">{{ m.full_name }}</a></td>
-          <td>{{ m.phone }}</td>
-          <td>{{ m.membership_plan }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+<div class="dashboard-grid">
+  <div class="card card-light card-section">
+    <div class="section-header section-header-icon">
+      <div class="section-title-group">
+        <span class="section-icon section-icon-gold">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </span>
+        <h2>Renewals</h2>
+      </div>
+      <a href="/renewals" class="view-all-link">View All &rsaquo;</a>
+    </div>
+    {% if renewal_feed %}
+    <ul class="notification-list">
+      {% for m in renewal_feed %}
+      <li class="notification-item">
+        <span class="avatar avatar-{{ loop.index0 % 6 }}">{{ m.full_name.split()[0][0] }}{% if m.full_name.split()|length > 1 %}{{ m.full_name.split()[-1][0] }}{% endif %}</span>
+        <div class="notification-body">
+          <div class="notification-top">
+            <a href="/members/{{ m.id }}" class="notification-name">{{ m.full_name }}</a>
+            <span class="notification-date">{{ m.renewal_date.strftime('%d/%m/%Y') }}</span>
+          </div>
+          <p class="notification-message">
+            {% if m.renewal_date == today %}
+            Membership renewal due today — {{ m.membership_plan }} plan
+            {% else %}
+            Upcoming renewal — {{ m.membership_plan }} plan due soon
+            {% endif %}
+          </p>
+        </div>
+        <a href="/members/{{ m.id }}" class="btn btn-outline btn-sm">View</a>
+      </li>
+      {% endfor %}
+    </ul>
+    <div class="card-footer-action">
+      <a href="/renewals" class="btn btn-primary btn-block">Show More Renewals</a>
+    </div>
     {% else %}
-    <p class="empty-state">No renewals due today</p>
+    <p class="empty-state-inline">No renewals due today or in the next 7 days.</p>
     {% endif %}
   </div>
-  <div class="card">
-    <h2>Upcoming Renewals (7 Days)</h2>
-    {% if renewals_soon %}
-    <table>
-      <thead><tr><th>Name</th><th>Renewal Date</th><th>Status</th></tr></thead>
-      <tbody>
-        {% for m in renewals_soon %}
-        <tr>
-          <td><a href="/members/{{ m.id }}">{{ m.full_name }}</a></td>
-          <td>{{ m.renewal_date }}</td>
-          <td><span class="badge badge-pending">{{ m.status.value }}</span></td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% else %}
-    <p class="empty-state">No upcoming renewals</p>
-    {% endif %}
-  </div>
-</div>
 
-<div class="card">
-  <h2>Quick Actions</h2>
-  <div class="actions">
-    <a href="/members/add" class="btn btn-primary">Add Member</a>
-    <a href="/search" class="btn btn-secondary">Search Members</a>
-    <a href="/renewals" class="btn btn-secondary">View Renewals</a>
+  <div class="card card-light card-section">
+    <div class="section-header section-header-icon">
+      <div class="section-title-group">
+        <span class="section-icon section-icon-red">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        </span>
+        <h2>Overdue &amp; Pending</h2>
+      </div>
+      <a href="/members?status=Expired" class="view-all-link">View All &rsaquo;</a>
+    </div>
+    {% if overdue_members %}
+    <ul class="overdue-list">
+      {% for m in overdue_members %}
+      <li class="overdue-item">
+        <span class="avatar avatar-{{ loop.index0 % 6 }}">{{ m.full_name.split()[0][0] }}{% if m.full_name.split()|length > 1 %}{{ m.full_name.split()[-1][0] }}{% endif %}</span>
+        <div class="overdue-body">
+          <a href="/members/{{ m.id }}" class="overdue-name">{{ m.full_name }}</a>
+          <div class="overdue-badge {% if m.status.value == 'Expired' %}overdue-badge-expired{% else %}overdue-badge-pending{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+            <span>{{ m.membership_plan }} · {{ m.renewal_date.strftime('%d/%m/%Y') }}</span>
+            <strong>₹{{ "{:,.0f}".format(m.fee_paid | default(0)) }}</strong>
+          </div>
+        </div>
+        <a href="/members/{{ m.id }}" class="btn btn-outline btn-sm">Profile</a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="empty-state-inline">No expired or renewal-pending members.</p>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

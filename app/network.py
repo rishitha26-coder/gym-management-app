@@ -3,8 +3,19 @@
 from __future__ import annotations
 
 import socket
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from starlette.requests import Request
 
 DEFAULT_PORT = 8000
+
+
+def get_server_port(request: Request | None = None) -> int:
+    """Return the port the app is actually served on (from the request when available)."""
+    if request is not None and request.url.port:
+        return request.url.port
+    return DEFAULT_PORT
 
 
 def get_lan_ip() -> str | None:
@@ -30,7 +41,9 @@ def get_lan_ip() -> str | None:
     return None
 
 
-def get_lan_url(port: int = DEFAULT_PORT) -> str | None:
+def get_lan_url(port: int | None = None) -> str | None:
+    if port is None:
+        port = DEFAULT_PORT
     """Return the LAN URL staff can use on the same WiFi, or None."""
     ip = get_lan_ip()
     if ip:

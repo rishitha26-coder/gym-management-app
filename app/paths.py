@@ -82,3 +82,17 @@ def get_welcome_dismissed_path() -> Path:
 def should_show_welcome() -> bool:
     """Return True until the user dismisses the first-run welcome banner."""
     return not get_welcome_dismissed_path().exists()
+
+
+def get_lan_dismissed_path() -> Path:
+    """Marker file indicating the LAN access banner was dismissed."""
+    if is_frozen():
+        path = _user_data_root() / ".lan_dismissed"
+    else:
+        path = _bundle_root() / ".lan_dismissed"
+    return path
+
+
+def should_show_lan_banner() -> bool:
+    """Return True until an admin dismisses the LAN access banner."""
+    return not get_lan_dismissed_path().exists()

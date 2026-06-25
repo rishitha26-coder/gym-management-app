@@ -9,7 +9,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.database import Base, SessionLocal, engine, run_migrations
-from app.network import DEFAULT_PORT, get_lan_url
+from app.network import get_lan_url, get_server_port
 from app.paths import get_static_dir, get_templates_dir, get_uploads_dir, is_frozen
 from app.routers import auth, dashboard, members, reports
 from app.seed import init_db
@@ -52,19 +52,22 @@ async def unauthorized_handler(request: Request, exc):
 
 
 @app.get("/health")
-async def health():
+async def health(request: Request):
+    port = get_server_port(request)
     return {
         "status": "ok",
         "frozen": is_frozen(),
-        "lan_url": get_lan_url(DEFAULT_PORT),
+        "port": port,
+        "lan_url": get_lan_url(port),
     }
 
 
 @app.get("/starting")
 async def starting_page(request: Request):
     """Friendly loading page while the local server finishes starting."""
+    port = get_server_port(request)
     return templates.TemplateResponse(
         request,
         "starting.html",
-        {"lan_url": get_lan_url(DEFAULT_PORT)},
+        {"lan_url": get_lan_url(port)},
     )

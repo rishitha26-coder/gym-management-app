@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 from app.auth import can_delete_member, can_edit_member, require_admin, require_login
 from app.database import get_db
 from app.membership import PlanMonths, plan_choices
-from app.models import PaymentMethod
+from app.models import MemberStatus, PaymentMethod
 from app.paths import get_templates_dir
 from app.schemas import MemberCreate, MemberUpdate, PaymentUpdateForm, UserOut
 from app.services.member_service import MemberService
@@ -29,6 +29,37 @@ def _plans():
 
 def _payment_methods():
     return [p.value for p in PaymentMethod]
+
+
+@router.get("/members")
+async def members_list(
+    request: Request,
+    q: str = "",
+    status: str = "",
+    plan: str = "",
+    db: Session = Depends(get_db),
+    user: UserOut = Depends(require_login),
+):
+    plan_months = int(plan) if plan.isdigit() else None
+    members = MemberService.list_all(
+        db,
+        query=q,
+        status=status or None,
+        plan_months=plan_months,
+    )
+    return templates.TemplateResponse(
+        request,
+        "members.html",
+        {
+            "user": user,
+            "members": members,
+            "query": q,
+            "status_filter": status,
+            "plan_filter": plan,
+            "plans": _plans(),
+            "statuses": [s.value for s in MemberStatus],
+        },
+    )
 
 
 @router.get("/members/add")
