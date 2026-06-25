@@ -1,0 +1,47 @@
+name: Build Windows EXE
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-build.txt
+
+      - name: Build executable
+        run: pyinstaller build.spec
+
+      - name: Upload GymManager folder
+        uses: actions/upload-artifact@v4
+        with:
+          name: GymManager-Windows
+          path: dist/GymManager/
+          retention-days: 30
+
+      - name: Upload GymManager zip
+        shell: pwsh
+        run: Compress-Archive -Path dist/GymManager -DestinationPath dist/GymManager-Windows.zip
+
+      - name: Upload zip artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GymManager-Windows-zip
+          path: dist/GymManager-Windows.zip
+          retention-days: 30

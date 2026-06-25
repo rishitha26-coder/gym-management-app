@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Reports - Gym Management{% endblock %}
+{% block page_title %}Reports{% endblock %}
+{% block content %}
+<p style="color:var(--muted);margin-bottom:1.5rem">
+  Download reports in Excel (.xlsx) for easy viewing in Windows, or CSV if you prefer spreadsheet imports.
+</p>
+
+<div class="card" style="margin-bottom:1.5rem">
+  <h2 style="margin-bottom:1rem">Member Reports</h2>
+  <div class="report-grid">
+    {% for report in reports.member_reports %}
+    <div class="report-item">
+      <h3>{{ report.title }}</h3>
+      <p>{{ report.description }}</p>
+      <div class="report-actions">
+        <a href="{{ report.xlsx_url }}" class="btn btn-primary">Download Excel</a>
+        <a href="{{ report.csv_url }}" class="btn btn-secondary">Download CSV</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:1.5rem">
+  <h2 style="margin-bottom:1rem">Financial Reports</h2>
+  <div class="report-grid">
+    {% for report in reports.financial_reports %}
+    <div class="report-item">
+      <h3>{{ report.title }}</h3>
+      <p>{{ report.description }}</p>
+      <div class="report-actions">
+        <a href="{{ report.xlsx_url }}" class="btn btn-primary">Download Excel</a>
+        <a href="{{ report.csv_url }}" class="btn btn-secondary">Download CSV</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="card">
+  <h2 style="margin-bottom:1rem">Overview</h2>
+  <div class="report-item">
+    <h3>Summary Report (PDF)</h3>
+    <p>High-level counts for members, renewals, and total collections.</p>
+    <div class="report-actions">
+      <a href="{{ reports.summary_pdf_url }}" class="btn btn-secondary">Download PDF</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+"""FastAPI application entry point."""
+
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI, Request, status
+from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
+from starlette.middleware.sessions import SessionMiddleware
+
+from app.database import Base, SessionLocal, engine, run_migrations
+from app.paths import get_static_dir, get_uploads_dir, is_frozen
+from app.routers import auth, dashboard, members, reports
+from app.seed import init_db
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    Base.metadata.create_all(bind=engine)
+    run_migrations()
+    db = SessionLocal()
+    try:
+        init_db(db)
+    finally:
+        db.close()
+    yield
+
+
+app = FastAPI(title="Gym Management", lifespan=lifespan)
+app.add_middleware(SessionMiddleware, secret_key="local-gym-secret-change-in-prod")
+
+app.mount("/static", StaticFiles(directory=str(get_static_dir())), name="static")
+uploads_root = get_uploads_dir().parent
+app.mount(
+    "/uploads",
+    StaticFiles(directory=str(uploads_root)),
+    name="uploads",
+)
+
+app.include_router(auth.router)
+app.include_router(dashboard.router)
+app.include_router(members.router)
+app.include_router(reports.router)
+
+
+@app.exception_handler(401)
+async def unauthorized_handler(request: Request, exc):
+    return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
+
+
+@app.get("/health")
+async def health():
+    return {"status": "ok", "frozen": is_frozen()}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Search - Gym Management{% endblock %}
+{% block page_title %}Search Members{% endblock %}
+{% block content %}
+<form method="get" action="/search" class="search-bar">
+  <input type="text" name="q" value="{{ query }}" placeholder="Search by phone number or name..." autofocus>
+  <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+{% if query %}
+<div class="card">
+  <h2>Results for "{{ query }}" ({{ members|length }})</h2>
+  {% if members %}
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Phone</th><th>Plan</th><th>Renewal</th><th>Status</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for m in members %}
+      <tr>
+        <td>{{ m.full_name }}</td>
+        <td>{{ m.phone }}</td>
+        <td>{{ m.membership_plan }}</td>
+        <td>{{ m.renewal_date }}</td>
+        <td>
+          <span class="badge {% if m.status.value == 'Active' %}badge-active{% elif m.status.value == 'Renewal Pending' %}badge-pending{% else %}badge-expired{% endif %}">
+            {{ m.status.value }}
+          </span>
+        </td>
+        <td><a href="/members/{{ m.id }}" class="btn btn-sm btn-secondary">View Profile</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty-state">No members found</p>
+  {% endif %}
+</div>
+{% else %}
+<div class="card">
+  <p class="empty-state">Enter a phone number or name to search</p>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Gym Management{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">Gym<span>Admin</span></div>
+      <a href="/" class="nav-link {% if request.url.path == '/' %}active{% endif %}">Dashboard</a>
+      <a href="/members/add" class="nav-link {% if '/members/add' in request.url.path %}active{% endif %}">Add Member</a>
+      <a href="/search" class="nav-link {% if request.url.path == '/search' %}active{% endif %}">Search</a>
+      <a href="/renewals" class="nav-link {% if request.url.path == '/renewals' %}active{% endif %}">Renewals</a>
+      <a href="/reports" class="nav-link {% if request.url.path.startswith('/reports') %}active{% endif %}">Reports</a>
+      <div style="flex:1"></div>
+      <a href="/logout" class="nav-link">Logout</a>
+    </aside>
+    <main class="main">
+      <div class="header">
+        <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+        {% if user %}
+        <div class="user-badge"><strong>{{ user.username }}</strong> · {{ user.role.value }}</div>
+        {% endif %}
+      </div>
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</body>
+</html>

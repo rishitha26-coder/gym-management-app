@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Renewals - Gym Management{% endblock %}
+{% block page_title %}Renewal Tracking{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>Due Today ({{ renewals.due_today|length }})</h2>
+  {% if renewals.due_today %}
+  <table>
+    <thead><tr><th>Name</th><th>Phone</th><th>Plan</th><th>Renewal Date</th><th></th></tr></thead>
+    <tbody>
+      {% for m in renewals.due_today %}
+      <tr>
+        <td>{{ m.full_name }}</td><td>{{ m.phone }}</td><td>{{ m.membership_plan }}</td>
+        <td>{{ m.renewal_date }}</td>
+        <td><a href="/members/{{ m.id }}/payment" class="btn btn-sm btn-primary">Renew</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="empty-state">None due today</p>{% endif %}
+</div>
+
+<div class="card">
+  <h2>Next 7 Days ({{ renewals.next_7_days|length }})</h2>
+  {% if renewals.next_7_days %}
+  <table>
+    <thead><tr><th>Name</th><th>Phone</th><th>Renewal Date</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for m in renewals.next_7_days %}
+      <tr>
+        <td>{{ m.full_name }}</td><td>{{ m.phone }}</td><td>{{ m.renewal_date }}</td>
+        <td><span class="badge badge-pending">{{ m.status.value }}</span></td>
+        <td><a href="/members/{{ m.id }}" class="btn btn-sm btn-secondary">View</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="empty-state">None in next 7 days</p>{% endif %}
+</div>
+
+<div class="card">
+  <h2>Expired ({{ renewals.expired|length }})</h2>
+  {% if renewals.expired %}
+  <table>
+    <thead><tr><th>Name</th><th>Phone</th><th>Renewal Date</th><th></th></tr></thead>
+    <tbody>
+      {% for m in renewals.expired %}
+      <tr>
+        <td>{{ m.full_name }}</td><td>{{ m.phone }}</td><td>{{ m.renewal_date }}</td>
+        <td><a href="/members/{{ m.id }}/payment" class="btn btn-sm btn-primary">Renew</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="empty-state">No expired members</p>{% endif %}
+</div>
+
+<div class="card">
+  <h2>Active ({{ renewals.active|length }})</h2>
+  {% if renewals.active %}
+  <table>
+    <thead><tr><th>Name</th><th>Phone</th><th>Renewal Date</th><th></th></tr></thead>
+    <tbody>
+      {% for m in renewals.active %}
+      <tr>
+        <td>{{ m.full_name }}</td><td>{{ m.phone }}</td><td>{{ m.renewal_date }}</td>
+        <td><a href="/members/{{ m.id }}" class="btn btn-sm btn-secondary">View</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="empty-state">No active members</p>{% endif %}
+</div>
+{% endblock %}

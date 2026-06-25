@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Gym Management{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="label">Total Members</div>
+    <div class="value">{{ stats.total_members }}</div>
+  </div>
+  <div class="stat-card success">
+    <div class="label">Active</div>
+    <div class="value">{{ stats.active_members }}</div>
+  </div>
+  <div class="stat-card warning">
+    <div class="label">Renewal Pending</div>
+    <div class="value">{{ stats.renewal_pending }}</div>
+  </div>
+  <div class="stat-card danger">
+    <div class="label">Expired</div>
+    <div class="value">{{ stats.expired_members }}</div>
+  </div>
+  <div class="stat-card info">
+    <div class="label">Renewals Today</div>
+    <div class="value">{{ stats.renewals_today }}</div>
+  </div>
+  <div class="stat-card info">
+    <div class="label">Next 7 Days</div>
+    <div class="value">{{ stats.renewals_next_7_days }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Total Collected</div>
+    <div class="value" style="font-size:1.4rem">₹{{ "{:,.0f}".format(stats.total_collected) }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">PT Collected</div>
+    <div class="value" style="font-size:1.4rem">₹{{ "{:,.0f}".format(stats.personal_training_collected) }}</div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+  <div class="card">
+    <h2>Renewals Due Today</h2>
+    {% if renewals_today %}
+    <table>
+      <thead><tr><th>Name</th><th>Phone</th><th>Plan</th></tr></thead>
+      <tbody>
+        {% for m in renewals_today %}
+        <tr>
+          <td><a href="/members/{{ m.id }}">{{ m.full_name }}</a></td>
+          <td>{{ m.phone }}</td>
+          <td>{{ m.membership_plan }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="empty-state">No renewals due today</p>
+    {% endif %}
+  </div>
+  <div class="card">
+    <h2>Upcoming Renewals (7 Days)</h2>
+    {% if renewals_soon %}
+    <table>
+      <thead><tr><th>Name</th><th>Renewal Date</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for m in renewals_soon %}
+        <tr>
+          <td><a href="/members/{{ m.id }}">{{ m.full_name }}</a></td>
+          <td>{{ m.renewal_date }}</td>
+          <td><span class="badge badge-pending">{{ m.status.value }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="empty-state">No upcoming renewals</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card">
+  <h2>Quick Actions</h2>
+  <div class="actions">
+    <a href="/members/add" class="btn btn-primary">Add Member</a>
+    <a href="/search" class="btn btn-secondary">Search Members</a>
+    <a href="/renewals" class="btn btn-secondary">View Renewals</a>
+  </div>
+</div>
+{% endblock %}

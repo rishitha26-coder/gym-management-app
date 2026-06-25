@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}{{ member.full_name }} - Gym Management{% endblock %}
+{% block page_title %}Member Profile{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="profile-grid">
+    <div>
+      {% if member.photo_path %}
+      <img src="{{ member.photo_path }}" alt="{{ member.full_name }}" class="profile-photo">
+      {% else %}
+      <div class="profile-photo-placeholder">👤</div>
+      {% endif %}
+    </div>
+    <div>
+      <h2 style="margin-bottom:0.5rem">{{ member.full_name }}</h2>
+      <span class="badge {% if member.status.value == 'Active' %}badge-active{% elif member.status.value == 'Renewal Pending' %}badge-pending{% else %}badge-expired{% endif %}">
+        {{ member.status.value }}
+      </span>
+      <div class="detail-grid" style="margin-top:1.5rem">
+        <div class="detail-item"><label>Phone</label><span>{{ member.phone }}</span></div>
+        <div class="detail-item"><label>Date of Joining</label><span>{{ member.date_of_joining }}</span></div>
+        <div class="detail-item"><label>Membership Plan</label><span>{{ member.membership_plan }}</span></div>
+        <div class="detail-item"><label>Renewal Date</label><span>{{ member.renewal_date }}</span></div>
+        <div class="detail-item"><label>Fee Paid</label><span>₹{{ "{:,.2f}".format(member.fee_paid) }}</span></div>
+        <div class="detail-item"><label>Payment Date</label><span>{{ member.payment_date or '—' }}</span></div>
+        <div class="detail-item"><label>Payment Method</label><span>{{ member.payment_method or '—' }}</span></div>
+        <div class="detail-item"><label>Balance</label><span>{% if member.balance is not none %}₹{{ "{:,.2f}".format(member.balance) }}{% else %}—{% endif %}</span></div>
+        <div class="detail-item"><label>Personal Training</label><span>{{ member.personal_training_display }}</span></div>
+        <div class="detail-item" style="grid-column:1/-1"><label>Notes</label><span>{{ member.notes or '—' }}</span></div>
+      </div>
+      <div class="actions" style="margin-top:1.5rem">
+        <a href="/members/{{ member.id }}/payment" class="btn btn-primary">Update Payment</a>
+        {% if can_edit %}
+        <a href="/members/{{ member.id }}/edit" class="btn btn-secondary">Edit</a>
+        {% endif %}
+        {% if can_delete %}
+        <form method="post" action="/members/{{ member.id }}/delete" style="display:inline"
+              onsubmit="return confirm('Delete this member?')">
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+        {% endif %}
+        <a href="/search?q={{ member.phone }}" class="btn btn-secondary">Back to Search</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
