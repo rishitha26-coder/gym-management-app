@@ -32,9 +32,11 @@ async def lifespan(app: FastAPI):
         init_db(db)
     finally:
         db.close()
-    start_mdns_registration()
+    if not is_frozen():
+        start_mdns_registration()
     yield
-    unregister_mdns_service()
+    if not is_frozen():
+        unregister_mdns_service()
 
 
 app = FastAPI(title="Celebrity Fitness Studio", lifespan=lifespan)

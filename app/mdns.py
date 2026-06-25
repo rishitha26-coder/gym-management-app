@@ -57,6 +57,12 @@ def register_mdns_service(port: int = DEFAULT_PORT) -> bool:
 
 def start_mdns_registration(port: int = DEFAULT_PORT) -> None:
     """Start mDNS registration on a background thread (non-blocking)."""
+    from app.paths import is_frozen
+
+    if is_frozen():
+        logger.info("Skipping mDNS in frozen build; use computer name URL instead")
+        return
+
     threading.Thread(
         target=register_mdns_service,
         args=(port,),
