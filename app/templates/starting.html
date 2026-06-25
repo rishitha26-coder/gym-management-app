@@ -46,7 +46,7 @@
     <div class="starting-card">
       <img src="/static/images/logo.png" alt="Celebrity Fitness Studio" class="starting-logo">
       <h1 style="font-size:1.25rem">Celebrity Fitness Studio</h1>
-      <p style="color:var(--muted);margin-top:0.75rem">Starting up — your browser will open the login page in a moment.</p>
+      <p id="status" style="color:var(--muted);margin-top:0.75rem">Starting up — your browser will open the login page in a moment.</p>
       {% if lan_url %}
       <p class="lan-note" style="margin-top:1rem;font-size:0.9rem;color:var(--accent)">
         Staff on the same WiFi can also open:<br>
@@ -59,9 +59,34 @@
   </div>
   <script>
     (function poll() {
-      fetch("/health")
-        .then(function (r) { if (r.ok) window.location.href = "/login"; else setTimeout(poll, 400); })
-        .catch(function () { setTimeout(poll, 400); });
+      var attempts = 0;
+      var maxAttempts = 90;
+      var statusEl = document.getElementById("status");
+
+      function tryHealth() {
+        attempts += 1;
+        fetch("/health")
+          .then(function (r) {
+            if (r.ok) {
+              window.location.href = "/login";
+            } else if (attempts < maxAttempts) {
+              setTimeout(tryHealth, 800);
+            } else {
+              statusEl.textContent =
+                "Still starting — please wait a moment, or close and reopen Celebrity Fitness Manager.";
+            }
+          })
+          .catch(function () {
+            if (attempts < maxAttempts) {
+              setTimeout(tryHealth, 800);
+            } else {
+              statusEl.textContent =
+                "Could not connect yet. Check that Celebrity Fitness Manager is running, then refresh this page.";
+            }
+          });
+      }
+
+      setTimeout(tryHealth, 1500);
     })();
   </script>
 </body>

@@ -1,9 +1,13 @@
 Celebrity Fitness Manager — Quick Start
 
 1. Double-click GymManagerSetup.exe
+   If Windows shows "Windows protected your PC":
+     - Click "More info"
+     - Click "Run anyway"
 2. Click Install
 3. Double-click "Celebrity Fitness Manager" on your desktop
    (or run start_gym.bat in the install folder if the shortcut fails)
+   If Windows Defender asks, allow access on private networks (gym WiFi).
 4. Your browser opens automatically — log in: admin / admin123
 5. Start adding members!
 
@@ -24,6 +28,10 @@ STAFF ON SAME WiFi (free local network)
   IMPORTANT: Use only on your trusted gym WiFi. Do not expose to the public internet.
 
 TROUBLESHOOTING
+  - "Windows protected your PC" (SmartScreen) — click More info, then Run anyway.
+    The app is not signed with a paid certificate; this warning is expected.
+  - Windows Defender blocked the app — open Windows Security, Protection history,
+    find GymManager, and choose Allow. Or run as administrator once.
   - "Port 8000 already in use" — the app may already be running; check your browser.
     Close any other copy, or restart the PC.
   - Browser did not open — go to http://127.0.0.1:8000 manually.

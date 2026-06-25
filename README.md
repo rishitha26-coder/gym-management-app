@@ -21,6 +21,18 @@ A **local-only**, zero-cost member management web application for **Celebrity Fi
 3. **Launch** **Celebrity Fitness Manager** from the desktop shortcut (created automatically during install).
 4. Your **browser opens automatically** — log in and start managing members.
 
+### Windows SmartScreen / Defender (unsigned app)
+
+The installer and app are **not code-signed** (no paid certificate). Windows may show a blue SmartScreen warning — this is normal for small local apps.
+
+**SmartScreen ("Windows protected your PC"):**
+1. Click **More info**
+2. Click **Run anyway**
+
+**Windows Defender / Firewall (first launch):**
+- If prompted, choose **Allow access** on **private networks** (your gym WiFi).
+- If the app is blocked, open **Windows Security → Virus & threat protection → Protection history**, find **GymManager**, and choose **Allow**.
+
 Your data is stored locally and survives app updates:
 
 | Data | Location |

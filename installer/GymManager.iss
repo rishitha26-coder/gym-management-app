@@ -34,4 +34,4 @@ Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 
 [Messages]
-WelcomeLabel2=This will install [name/ver] on your computer.%n%nYour member data is stored in %APPDATA%\GymManager and persists across updates.
+WelcomeLabel2=This will install [name/ver] on your computer.%n%nYour member data is stored in %APPDATA%\GymManager and persists across updates.%n%nIf Windows SmartScreen appears, click More info, then Run anyway (the app is not code-signed).
