@@ -1,9 +1,33 @@
-Gym Manager — Quick Start
+Celebrity Fitness Manager — Quick Start
 
 1. Double-click GymManagerSetup.exe
 2. Click Install
-3. Double-click "Gym Manager" on your desktop
-4. Login: admin / admin123
+3. Double-click "Celebrity Fitness Manager" on your desktop
+   (or run start_gym.bat in the install folder if the shortcut fails)
+4. Your browser opens automatically — log in: admin / admin123
 5. Start adding members!
 
-Your member data is saved automatically on this computer.
+YOUR DATA STAYS ON THIS PC
+  Database:  %APPDATA%\GymManager\data\gym.db
+  Photos:    %APPDATA%\GymManager\uploads\members\
+  No internet or cloud account needed.
+
+ONE PC ONLY (owner's computer)
+  Use the browser on the same PC after launching the app.
+  Address: http://127.0.0.1:8000
+
+STAFF ON SAME WiFi (free local network)
+  After launching on the gym PC, the dashboard shows a link like:
+    http://192.168.x.x:8000
+  Staff on phones/laptops connected to the SAME gym WiFi can open that
+  address in any browser and log in (staff / staff123).
+  IMPORTANT: Use only on your trusted gym WiFi. Do not expose to the public internet.
+
+TROUBLESHOOTING
+  - "Port 8000 already in use" — the app may already be running; check your browser.
+    Close any other copy, or restart the PC.
+  - Browser did not open — go to http://127.0.0.1:8000 manually.
+  - Staff cannot connect — confirm they are on the same WiFi as the gym PC and
+    Windows Firewall allows the app on private networks (first launch may prompt).
+
+Celebrity Fitness Studio — Fit Today, Strong Tomorrow

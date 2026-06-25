@@ -304,7 +304,7 @@ class ReportService:
         doc = SimpleDocTemplate(buffer, pagesize=letter)
         styles = getSampleStyleSheet()
         elements = [
-            Paragraph("Gym Management Summary Report", styles["Title"]),
+            Paragraph("Celebrity Fitness Studio — Summary Report", styles["Title"]),
             Spacer(1, 12),
             Paragraph(f"Generated: {date.today().isoformat()}", styles["Normal"]),
             Spacer(1, 24),

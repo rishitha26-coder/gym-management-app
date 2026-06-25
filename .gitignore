@@ -9,3 +9,4 @@ uploads/members/*
 !uploads/members/.gitkeep
 .DS_Store
 *.log
+screenshots/

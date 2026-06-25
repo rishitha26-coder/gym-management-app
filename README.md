@@ -1,6 +1,6 @@
-# Gym Management App
+# Celebrity Fitness Studio — Management App
 
-A **local-only**, zero-cost gym management web application. Runs entirely on your machine with SQLite, local file storage, and no external services.
+A **local-only**, zero-cost member management web application for **Celebrity Fitness Studio**. Runs entirely on your machine with SQLite, local file storage, and no external services.
 
 ## Features
 
@@ -18,7 +18,7 @@ A **local-only**, zero-cost gym management web application. Runs entirely on you
 
 1. **Download** `GymManagerSetup.exe` from the [GitHub Actions](../../actions) build (artifact: **GymManagerSetup**) or from a release tag.
 2. **Install** by double-clicking `GymManagerSetup.exe`.
-3. **Launch** **Gym Manager** from the desktop shortcut (created automatically during install).
+3. **Launch** **Celebrity Fitness Manager** from the desktop shortcut (created automatically during install).
 4. Your **browser opens automatically** — log in and start managing members.
 
 Your data is stored locally and survives app updates:
@@ -29,6 +29,27 @@ Your data is stored locally and survives app updates:
 | Member photos | `%APPDATA%\GymManager\uploads\members\` |
 
 The app works fully offline. No internet connection is required after install.
+
+## Unpaid local "cloud" — how it works (zero cost)
+
+This app gives you **cloud-like access** without paying for hosting:
+
+| Option | Who uses it | How to connect | Cost |
+|--------|-------------|----------------|------|
+| **A — One PC** | Owner on the gym computer | Launch the app; browser opens `http://127.0.0.1:8000` | Free |
+| **B — Same WiFi (LAN)** | Staff on phones/laptops at the gym | Open the address shown on the dashboard, e.g. `http://192.168.1.50:8000` | Free |
+
+**How LAN mode works:** The app runs a small web server on the gym PC and listens on your local network (`0.0.0.0:8000`). Staff on the **same trusted WiFi** can use any browser — it feels like a cloud app, but all data stays in `%APPDATA%\GymManager` on that PC. No subscription, no Firebase, no AWS bill.
+
+**Why not real cloud hosting?** Services like Firebase, AWS, or paid SaaS add monthly cost, setup, and internet dependency. For a single gym with local staff, **SQLite + local server + LAN** is the best zero-cost option.
+
+**Security:** LAN mode is for **trusted gym WiFi only**. Do not port-forward to the internet or use on public networks.
+
+**Alternatives (brief):**
+
+- **This app (recommended):** Local SQLite + browser + optional LAN — $0, works offline.
+- **Paid cloud (Firebase, AWS, etc.):** Remote access anywhere, but ongoing cost and complexity.
+- **Spreadsheets:** Free but no member photos, renewals, or role-based login.
 
 ### How to get GymManagerSetup.exe for your customer
 
@@ -85,14 +106,14 @@ source .venv/bin/activate   # Windows: .venv\Scripts\activate
 
 pip install -r requirements.txt
 
-# Option A: standard dev server
+# Option A: standard dev server (localhost only)
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
-# Option B: same launcher the Windows exe uses
+# Option B: same launcher the Windows exe uses (binds 0.0.0.0 for LAN testing)
 python launcher.py
 ```
 
-Open **http://127.0.0.1:8000** in your browser.
+Open **http://127.0.0.1:8000** on the host PC. On the same WiFi, other devices can use the LAN URL shown on the dashboard (e.g. `http://192.168.x.x:8000`).
 
 ## Default Login Credentials
 
@@ -133,9 +154,9 @@ Excel is recommended for gym owners on Windows; CSV remains available for import
 
 ```
 gym-management-app/
-├── launcher.py              # Starts server + opens browser
+├── launcher.py              # Starts server (0.0.0.0:8000) + opens browser
 ├── build.spec               # PyInstaller packaging config
-├── CUSTOMER_GUIDE.txt       # Plain-text handout for gym owner (5 steps)
+├── CUSTOMER_GUIDE.txt       # Plain-text handout for gym owner
 ├── requirements-build.txt   # PyInstaller (build only)
 ├── .github/workflows/
 │   └── build-windows.yml    # CI build for Windows exe
@@ -145,6 +166,7 @@ gym-management-app/
 ├── app/
 │   ├── main.py
 │   ├── paths.py             # Dev vs AppData paths
+│   ├── network.py           # LAN IP detection for staff access
 │   ├── membership.py        # Plan months (1–12)
 │   ├── models.py
 │   ├── schemas.py
@@ -166,3 +188,4 @@ gym-management-app/
 - Phone numbers must be unique.
 - Personal training amount displays **NA** when not set.
 - This app is designed for local use only — change the session secret before any non-local deployment.
+- LAN access binds to all interfaces (`0.0.0.0`) so staff on the same WiFi can connect; use only on trusted networks.

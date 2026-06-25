@@ -1,9 +1,9 @@
-; Inno Setup script for Gym Manager (run on Windows after PyInstaller build)
+; Inno Setup script for Celebrity Fitness Manager (run on Windows after PyInstaller build)
 ; Requires Inno Setup 6+: https://jrsoftware.org/isinfo.php
 
-#define MyAppName "Gym Manager"
+#define MyAppName "Celebrity Fitness Manager"
 #define MyAppVersion "1.0.0"
-#define MyAppPublisher "Gym Manager"
+#define MyAppPublisher "Celebrity Fitness Studio"
 #define MyAppExeName "GymManager.exe"
 
 [Setup]
@@ -31,6 +31,7 @@ Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription:
 [Files]
 Source: "..\dist\GymManager\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\CUSTOMER_GUIDE.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "start_gym.bat"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

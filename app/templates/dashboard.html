@@ -1,11 +1,21 @@
 {% extends "base.html" %}
-{% block title %}Dashboard - Gym Management{% endblock %}
+{% block title %}Dashboard - Celebrity Fitness Studio{% endblock %}
 {% block page_title %}Dashboard{% endblock %}
 {% block content %}
+{% if lan_url %}
+<div class="lan-banner">
+  <div>
+    <strong>Local network access</strong> — Staff on the same WiFi can open
+    <a href="{{ lan_url }}" target="_blank" rel="noopener">{{ lan_url }}</a>
+    from a phone or laptop.
+    <span class="lan-banner-note">Only use on your trusted gym WiFi; data stays on this PC.</span>
+  </div>
+</div>
+{% endif %}
 {% if show_welcome %}
 <div class="welcome-banner">
   <div>
-    <strong>Welcome to Gym Manager!</strong>
+    <strong>Welcome to Celebrity Fitness Studio!</strong>
     You are signed in as <strong>{{ user.username }}</strong>.
     Default admin login is <strong>admin</strong> / <strong>admin123</strong> — share staff login <strong>staff</strong> / <strong>staff123</strong> with your team if needed.
   </div>

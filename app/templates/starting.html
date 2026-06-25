@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Starting Gym Manager...</title>
+  <title>Starting Celebrity Fitness Manager...</title>
+  <link rel="icon" href="/static/images/logo.png" type="image/png">
   <link rel="stylesheet" href="/static/css/style.css">
   <style>
     .starting-page {
@@ -11,7 +12,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(ellipse at top, #1a1a2e 0%, var(--bg) 70%);
+      background: radial-gradient(ellipse at top, #1a1500 0%, var(--bg) 70%);
     }
     .starting-card {
       text-align: center;
@@ -21,6 +22,12 @@
       border-radius: calc(var(--radius) * 1.5);
       box-shadow: var(--shadow);
       max-width: 420px;
+    }
+    .starting-logo {
+      display: block;
+      margin: 0 auto 1.25rem;
+      max-height: 80px;
+      width: auto;
     }
     .spinner {
       width: 40px;
@@ -37,8 +44,16 @@
 <body>
   <div class="starting-page">
     <div class="starting-card">
-      <h1>Gym<span style="color:var(--accent)">Manager</span></h1>
+      <img src="/static/images/logo.png" alt="Celebrity Fitness Studio" class="starting-logo">
+      <h1 style="font-size:1.25rem">Celebrity Fitness Studio</h1>
       <p style="color:var(--muted);margin-top:0.75rem">Starting up — your browser will open the login page in a moment.</p>
+      {% if lan_url %}
+      <p class="lan-note" style="margin-top:1rem;font-size:0.9rem;color:var(--accent)">
+        Staff on the same WiFi can also open:<br>
+        <strong>{{ lan_url }}</strong>
+      </p>
+      <p style="color:var(--muted);font-size:0.8rem;margin-top:0.5rem">Use only on your trusted gym WiFi.</p>
+      {% endif %}
       <div class="spinner" aria-hidden="true"></div>
     </div>
   </div>

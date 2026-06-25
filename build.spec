@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-"""PyInstaller spec for Gym Manager Windows build."""
+"""PyInstaller spec for Celebrity Fitness Manager Windows build."""
 
 from pathlib import Path
 

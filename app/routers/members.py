@@ -1,9 +1,10 @@
 """Member CRUD, search, and renewal routes."""
 
 from datetime import date
-from typing import Optional
+from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile, status
+from pydantic import ValidationError
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -62,7 +63,7 @@ async def add_member_submit(
     notes: Optional[str] = Form(None),
     payment_method: Optional[str] = Form(None),
     balance: Optional[float] = Form(None),
-    photo: UploadFile = File(None),
+    photo: Annotated[Optional[UploadFile], File()] = None,
     db: Session = Depends(get_db),
     user: UserOut = Depends(require_login),
 ):
@@ -79,13 +80,19 @@ async def add_member_submit(
             fee_paid=fee_paid,
             payment_date=payment_date,
             personal_training_amount=personal_training_amount,
-            notes=notes,
+            notes=notes or None,
             payment_method=PaymentMethod(payment_method) if payment_method else None,
             balance=balance,
         )
         member = MemberService.create(db, data, photo_path)
-    except (HTTPException, ValueError) as exc:
-        detail = exc.detail if isinstance(exc, HTTPException) else str(exc)
+    except (HTTPException, ValueError, ValidationError) as exc:
+        detail = (
+            exc.detail
+            if isinstance(exc, HTTPException)
+            else "; ".join(err["msg"] for err in exc.errors())
+            if isinstance(exc, ValidationError)
+            else str(exc)
+        )
         return templates.TemplateResponse(
             request,
             "member_form.html",
@@ -161,7 +168,7 @@ async def edit_member_submit(
     notes: Optional[str] = Form(None),
     payment_method: Optional[str] = Form(None),
     balance: Optional[float] = Form(None),
-    photo: UploadFile = File(None),
+    photo: Annotated[Optional[UploadFile], File()] = None,
     db: Session = Depends(get_db),
     user: UserOut = Depends(require_admin),
 ):
@@ -183,8 +190,14 @@ async def edit_member_submit(
             balance=balance,
         )
         member = MemberService.update(db, member_id, data, photo_path)
-    except (HTTPException, ValueError) as exc:
-        detail = exc.detail if isinstance(exc, HTTPException) else str(exc)
+    except (HTTPException, ValueError, ValidationError) as exc:
+        detail = (
+            exc.detail
+            if isinstance(exc, HTTPException)
+            else "; ".join(err["msg"] for err in exc.errors())
+            if isinstance(exc, ValidationError)
+            else str(exc)
+        )
         member = MemberService.get_by_id(db, member_id)
         return templates.TemplateResponse(
             request,

@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.auth import require_login
 from app.database import get_db
+from app.network import DEFAULT_PORT, get_lan_url
 from app.paths import get_templates_dir, get_welcome_dismissed_path, should_show_welcome
 from app.schemas import UserOut
 from app.services.renewal_service import RenewalService
@@ -32,6 +33,7 @@ async def dashboard(
             "renewals_today": renewals.due_today[:5],
             "renewals_soon": renewals.next_7_days[:5],
             "show_welcome": should_show_welcome(),
+            "lan_url": get_lan_url(DEFAULT_PORT),
         },
     )
 

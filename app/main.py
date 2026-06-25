@@ -9,6 +9,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.database import Base, SessionLocal, engine, run_migrations
+from app.network import DEFAULT_PORT, get_lan_url
 from app.paths import get_static_dir, get_templates_dir, get_uploads_dir, is_frozen
 from app.routers import auth, dashboard, members, reports
 from app.seed import init_db
@@ -28,7 +29,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="Gym Management", lifespan=lifespan)
+app = FastAPI(title="Celebrity Fitness Studio", lifespan=lifespan)
 app.add_middleware(SessionMiddleware, secret_key="local-gym-secret-change-in-prod")
 
 app.mount("/static", StaticFiles(directory=str(get_static_dir())), name="static")
@@ -52,10 +53,18 @@ async def unauthorized_handler(request: Request, exc):
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "frozen": is_frozen()}
+    return {
+        "status": "ok",
+        "frozen": is_frozen(),
+        "lan_url": get_lan_url(DEFAULT_PORT),
+    }
 
 
 @app.get("/starting")
 async def starting_page(request: Request):
     """Friendly loading page while the local server finishes starting."""
-    return templates.TemplateResponse(request, "starting.html", {})
+    return templates.TemplateResponse(
+        request,
+        "starting.html",
+        {"lan_url": get_lan_url(DEFAULT_PORT)},
+    )
